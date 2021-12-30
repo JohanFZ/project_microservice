@@ -11,7 +11,7 @@ const userTypes = gql`
     id: ID!
     name: String!
     email: String!
-    rol: Enum_Role!
+    role: Enum_Role!
     profile: Profile
   }
 
