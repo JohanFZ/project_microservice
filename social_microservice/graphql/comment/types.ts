@@ -9,7 +9,7 @@ const commentTypes = gql`
   }
 
   type Query {
-    comment: [Comment]
+    comments: [Comment]
   }
 `;
 
