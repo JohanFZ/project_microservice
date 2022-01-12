@@ -6,8 +6,8 @@ const postResolvers = {
       return await prisma.comment.findMany({
         where:{
           postId: parent.id,
-        }
-      })
+        },
+      });
     },
     author: async (parent, args, context) => {
       return await prisma.author.findUnique({

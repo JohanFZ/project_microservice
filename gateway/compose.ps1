@@ -1,0 +1,1 @@
+rover fed2 supergraph compose --config ./supergraph-config.yaml > supergraph.graphql

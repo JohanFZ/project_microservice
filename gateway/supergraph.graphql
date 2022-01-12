@@ -1,0 +1,101 @@
+
+schema
+  @core(feature: "https://specs.apollo.dev/core/v0.2")
+  @core(feature: "https://specs.apollo.dev/join/v0.2", for: EXECUTION)
+{
+  query: Query
+}
+
+directive @core(feature: String!, as: String, for: core__Purpose) repeatable on SCHEMA
+
+directive @join__field(graph: join__Graph!, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(graph: join__Graph!, key: join__FieldSet, extension: Boolean! = false) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+type Author
+  @join__type(graph: SOCIAL, key: "id")
+  @join__type(graph: USERS, key: "id", extension: true)
+{
+  id: ID!
+  posts: [Post] @join__field(graph: SOCIAL)
+  comments: [Comment] @join__field(graph: SOCIAL)
+  user: User @join__field(graph: SOCIAL)
+}
+
+type Comment
+  @join__type(graph: SOCIAL, key: "id")
+{
+  id: ID!
+  content: String!
+  author: Author
+  post: Post
+}
+
+enum core__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+enum Enum_Role
+  @join__type(graph: USERS)
+{
+  ADMIN
+  USER
+}
+
+scalar join__FieldSet
+
+enum join__Graph {
+  SOCIAL @join__graph(name: "social", url: "http://localhost:4002")
+  USERS @join__graph(name: "users", url: "http://localhost:4000")
+}
+
+type Post
+  @join__type(graph: SOCIAL, key: "id")
+{
+  id: ID!
+  content: String!
+  author: Author
+  comments: [Comment]
+}
+
+type Profile
+  @join__type(graph: USERS, key: "id")
+{
+  id: ID!
+  document: String!
+  phone: String!
+}
+
+type Query
+  @join__type(graph: SOCIAL)
+  @join__type(graph: USERS)
+{
+  authors: [Author] @join__field(graph: SOCIAL)
+  posts: [Post] @join__field(graph: SOCIAL)
+  comments: [Comment] @join__field(graph: SOCIAL)
+  Users: [User] @join__field(graph: USERS)
+}
+
+type User
+  @join__type(graph: SOCIAL, key: "id", extension: true)
+  @join__type(graph: USERS, key: "id")
+{
+  id: ID!
+  name: String! @join__field(graph: USERS)
+  email: String! @join__field(graph: USERS)
+  role: Enum_Role! @join__field(graph: USERS)
+  profile: Profile @join__field(graph: USERS)
+  author: Author @join__field(graph: USERS)
+}

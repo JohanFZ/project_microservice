@@ -6,8 +6,8 @@ const commentResolvers = {
       return await prisma.author.findUnique({
         where:{
           id: parent.authorId
-        }
-      })
+        },
+      });
     },
     post: async (parent, args, context) => {
       return await prisma.post.findUnique({

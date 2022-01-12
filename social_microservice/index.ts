@@ -1,11 +1,15 @@
 import { ApolloServer } from 'apollo-server';
-import { resolvers } from './graphql/resolvers';
-import { typeDefs } from './graphql/types';
+import { authorResolvers, commentResolvers, postResolvers } from './graphql/resolvers';
+import { authorTypes, commentTypes, postTypes } from './graphql/types';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 import dotenv from 'dotenv';
 
 const server = new ApolloServer({
-  typeDefs: typeDefs,
-  resolvers: resolvers
+  schema: buildSubgraphSchema([
+    { typeDefs: authorTypes, resolvers: authorResolvers },
+    { typeDefs: postTypes, resolvers: postResolvers },
+    { typeDefs: commentTypes, resolvers: commentResolvers }
+  ]),
 });
 
 server.listen({ port: process.env.PORT || 4002 }).then((url) => {
